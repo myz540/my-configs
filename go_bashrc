@@ -1,0 +1,58 @@
+force_color_prompt=yes
+alias nextflow19="unset NXF_VER; /efs/testing/bin/nextflow"
+alias ll="ls -hl"
+alias lhl="ls -hal"
+alias cd-shared="cd /efs/analysis/sharedantigen/"
+alias cd-dtc="cd /efs/analysis/dtc_analysis/"
+alias cd-qiaseq="cd /efs/analysis/ngs_method_dev/variant_confirmation/"
+alias cd-var="cd /efs/analysis/variants/"
+alias cd-cfdna="cd /efs/analysis/cfdna/"
+alias cd-gmp="cd /efs/analysis/ngs_gmp_testing/"
+alias qsa="qstat -u '*'"
+alias cd-rnavar="cd /efs/analysis/ngs_method_dev/variant_calling_rna/"
+alias cd-fusion="cd /efs/analysis/ngs_method_dev/fusions/"
+alias cd-nebsc="cd /efs/analysis/ngs_method_dev/neb_single_cell/"
+alias cd-dev="cd /efs/analysis/ngs_method_dev/"
+alias cd-purity="cd /efs/analysis/ngs_method_dev/rna_tumor_purity/"
+export TERM='xterm-256color'
+alias qsub-s="qsub -q standard.q"
+alias nrun="nextflow run"
+export PATH=$PATH:/home/mzhong/.sdkman/candidates/groovy/2.4.15/bin/
+export PATH=$PATH:/home/mzhong/.local/bin
+shopt -s extglob
+export PATH=$PATH:/home/mzhong/dev/sbt/bin/
+# export FGBIO='/efs/home/users/mzhong/dev/fgbio/target/scala-2.12/fgbio-0.7.0-21f43a1-SNAPSHOT.jar'
+export MPLBACKEND='agg'
+alias STAR-Fusion='/home/mzhong/dev/STAR-Fusion-v1.4.0/STAR-Fusion'
+export STAR_FUSION_HOME='/home/mzhong/dev/STAR-Fusion-v1.4.0'
+export CPLUS_INCLUDE_PATH='/home/mzhong/include/'
+export PATH=$PATH:/home/mzhong/bin/
+export PATH=$PATH:/home/mzhong/ncbi-blast-2.7.1+/bin/
+export PATH=$PATH:/home/mzhong/refseq/blastdb/
+export BLASTDB='/home/mzhong/refseq/blastdb/'
+export PATH=$PATH:/home/mzhong/FastQC/
+export PATH=$PATH:/home/mzhong/bowtie2-2.3.4.3-linux-x86_64/
+export PATH=$PATH:/home/mzhong/bowtie-0.12.7/
+alias jupyter-local="jupyter notebook --no-browser  --port=7112"
+source ~/.local/bin/virtualenvwrapper.sh
+export WORKON_HOME=~/.virtualenvs
+alias ipython="ipython --colors Linux"
+alias get-node="qrsh -q standard.q -pe smp 16 -now no"
+alias ls-hiseq="aws s3 ls s3://gogmp-staging/CBB_CAM-FS1/E:/Lab-Share/HSQ-ER00018/"
+export PATH=$PATH:/home/mzhong/sratoolkit.2.9.6-1-centos_linux64/bin/
+
+# export PYTHONPATH=/home/mzhong/.local/lib/python2.7/site-packages:/home/mzhong/.local/bin:/opt/unicloud/lib64/python27.zip:/opt/unicloud/lib64/python2.7:/opt/unicloud/lib64/python2.7/plat-linux2:/opt/unicloud/lib64/python2.7/lib-tk:/opt/unicloud/lib64/python2.7/lib-old:/opt/unicloud/lib64/python2.7/lib-dynload:/usr/lib64/python2.7:/usr/lib/python2.7:/usr/lib64/python2.7/lib-tk:/opt/unicloud/lib/python2.7/site-packages:/opt/unicloud/lib/python2.7/site-packages/pysam-0.15.0-py2.7-linux-x86_64.egg:/opt/unicloud/lib/python2.7/site-packages/gffutils-0.9-py2.7.egg:/opt/unicloud/lib/python2.7/site-packages/argcomplete-1.10.0-py2.7.egg:/opt/unicloud/lib/python2.7/site-packages/argh-0.26.2-py2.7.egg:/opt/unicloud/lib/python2.7/site-packages/pyfaidx-0.5.5.2-py2.7.egg:/usr/lib64/python2.7/site-packages:/usr/lib/python2.7/site-packages:/opt/unicloud/lib/python2.7/site-packages:/usr/lib/python2.7/site-packages/aws_cfn_bootstrap-1.4-py2.7.egg:/home/mzhong/.local/lib/python2.7/site-packages/IPython/extensions:/home/mzhong/.ipython
+
+PS1='\[\033[01;32m\][\D{%d%b%Y} \u@\h:\W]\[\033[00m\]\$'
+
+alias matrix='LC_ALL=C tr -c "[:digit:]" " " < /dev/urandom | dd cbs=$COLUMNS conv=unblock | GREP_COLOR="1;32" grep --color "[^ ]"'
+
+function precat() {
+        URL=$(AWS_PROFILE=node aws s3 presign $1); curl $URL | cat; echo ''
+}
+function preless() {
+        URL=$(AWS_PROFILE=node aws s3 presign $1); curl $URL | less; echo ''
+}
+function precolumn() {
+        URL=$(AWS_PROFILE=node aws s3 presign $1); curl $URL | column -t -s$2; echo ''
+}

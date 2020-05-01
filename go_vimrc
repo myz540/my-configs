@@ -1,0 +1,77 @@
+set nocompatible              " required
+filetype off                  " required
+
+set splitright
+set background=dark
+let g:solarized_termcolors=256
+let g:solarized_termtrans=1
+colors solarized
+colorscheme elflord
+set encoding=utf-8
+
+" split navigations CNTL + j, k, l, h
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+
+nnoremap j h
+nnoremap k j
+nnoremap l k
+nnoremap ; l
+
+set foldmethod=indent
+set foldlevel=99
+set nu
+nnoremap <space> za
+set mouse+=a
+
+" venv support
+py << EOF
+import os
+import sys
+if 'VIRTUAL_ENV' in os.environ:
+    project_base_dir = os.environ['VIRTUAL_ENV']
+    activate_this = os.path.join(project_base_dir, 'bin/activate_this.py')
+    execfile(activate_this, dict(__file__=activate_this))
+EOF
+
+" for python files
+au BufNewFile,BufRead *.py set tabstop=4 
+au BufNewFile,BufRead *.py set textwidth=120
+au BufNewFile,BufRead *.py set softtabstop=4
+au BufNewFile,BufRead *.py set expandtab
+au BufNewFile,BufRead *.py set shiftwidth=4
+
+" for nextflow files
+au BufRead,BufNewFile *.nf set filetype=groovy
+au BufRead,BufNewFile *.nf set tabstop=4
+au BufRead,BufNewFile *.nf set shiftwidth=4
+
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+set expandtab
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
+
+" let Vundle manage Vundle, required
+Plugin 'gmarik/Vundle.vim'
+Plugin 'vim-scripts/indentpython.vim'
+" Plugin 'davidhalter/jedi-vim'
+Plugin 'jnurmine/Zenburn'
+Plugin 'altercation/vim-colors-solarized'
+
+" add all your plugins here (note older versions of Vundle
+" used Bundle instead of Plugin)
+
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+

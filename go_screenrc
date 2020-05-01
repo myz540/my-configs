@@ -1,0 +1,5 @@
+shell -$SHELL
+
+vbell off
+
+defscrollback 10000
