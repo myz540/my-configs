@@ -1,0 +1,53 @@
+syntax on
+filetype plugin indent on
+set splitright
+set encoding=utf-8
+set backspace=indent,eol,start
+set wildmenu
+set hlsearch
+set showmatch
+set clipboard=unnamed 
+" split navigations CNTL + j, k, l, p
+nnoremap <C-K> <C-W><C-J>
+nnoremap <C-L> <C-W><C-K>
+nnoremap <C-P> <C-W><C-L>
+nnoremap <C-J> <C-W><C-H>
+
+" remap movement keys to more natural keyboard position for normal and visual modes
+nnoremap j h
+nnoremap k j
+nnoremap l k
+nnoremap ; l
+
+vnoremap j h
+vnoremap k j
+vnoremap l k
+vnoremap ; l
+
+set foldmethod=indent
+set foldlevel=99
+set nu
+nnoremap <space> za
+set mouse+=a
+
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+set expandtab
+
+
+" for python files
+au BufNewFile,BufRead *.py set tabstop=4 
+au BufNewFile,BufRead *.py set textwidth=120
+au BufNewFile,BufRead *.py set softtabstop=4
+au BufNewFile,BufRead *.py set expandtab
+au BufNewFile,BufRead *.py set shiftwidth=4
+
+" for nextflow files
+au BufRead,BufNewFile *.nf set filetype=groovy
+au BufRead,BufNewFile *.nf set tabstop=4
+au BufRead,BufNewFile *.nf set shiftwidth=4
+
+set background=dark
+colorscheme elflord
+
