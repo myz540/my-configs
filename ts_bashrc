@@ -1,0 +1,140 @@
+# PATH extensions
+
+export PATH="/Users/mikezhong/dnanexus-upload-agent-1.5.33-osx:/opt/homebrew/opt/grep/libexec/gnubin:/opt/homebrew/opt/python@3.9/libexec/bin:/opt/homebrew/bin:${PATH}"
+# General stuff
+
+function aws_sts_decode() {
+    aws sts decode-authorization-message --encoded-message $1 | jq -r .DecodedMessage | jq
+}
+
+function ecr-login() {
+    account="130074668032"
+    region=${2:-"us-west-2"}
+    echo "Logging into ECR account ${account}, region $region"
+    aws ecr get-login-password --region $region | docker login --username AWS --password-stdin ${account}.dkr.ecr.${region}.amazonaws.com
+}
+
+
+# venv
+export WORKON_HOME=~/.venvs
+source /opt/homebrew/bin/virtualenvwrapper.sh
+
+# bash completion
+[[ -r "/opt/homebrew/etc/profile.d/bash_completion.sh" ]] && . "/opt/homebrew/etc/profile.d/bash_completion.sh"
+
+#bash completiong for git
+[[ -r "/opt/homebrew/etc/bash_completion.d/git-completion.bash" ]] && . "/opt/homebrew/etc/bash_completion.d/git-completion.bash"
+
+# bash completion for docker
+[[ -r "/opt/homebrew/etc/bash_completion.d/docker.sh" ]] && . "/opt/homebrew/etc/bash_completion.d/docker.sh" 
+
+export PS1="\[\033[36m\]\u\[\033[m\]@\[\033[32m\]\h:\[\033[33;1m\]\w\[\033[m\]\$ "
+export CLICOLOR=1
+export LSCOLORS=ExFxBxDxCxegedabagacad
+export BASH_SILENCE_DEPRECATION_WARNING=1
+alias ll="/bin/ls -hlG"
+alias lhl="/bin/ls -halG"
+alias ls="/bin/ls -G"
+shopt -s extglob
+export MPLBACKEND='agg'
+force_color_prompt=yes
+export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+
+# Maximum number of history lines in memory
+export HISTSIZE=50000
+# Maximum number of history lines on disk
+export HISTFILESIZE=50000
+# Ignore duplicate lines
+export HISTCONTROL=ignoredups:erasedups
+# When the shell exits, append to the history file 
+#  instead of overwriting it
+shopt -s histappend
+
+alias matrix='LC_ALL=C tr -c "[:digit:]" " " < /dev/urandom | dd cbs=$COLUMNS conv=unblock | GREP_COLOR="1;32" grep --color "[^ ]"'
+
+function precat() {
+        URL=$(aws s3 presign $1); curl $URL | cat; echo ''
+}
+function preless() {
+        URL=$(aws s3 presign $1); curl $URL | less; echo ''
+}
+function precolumn() {
+        URL=$(aws s3 presign $1); curl $URL | column -t -s$2; echo ''
+}
+
+_awsls()
+{
+    # local variable cur will autocomplete when that's the only available option starting with that letter or sequence of letters
+    local cur=${COMP_WORDS[COMP_CWORD]}
+    #  TODO need to sed out the s3:// starting any to make life easier...
+    # If tab completion string (cur) ends with a slash
+    local current_bucket_type="not_top_level"
+    local completion_text=$(echo ${cur} | sed 's|s3://||g')
+    if [[ ${cur} =~ .*/$ ]]
+    then
+        local current_s3_path=${cur}
+    # If there is a slash but doesn't end with a slash
+    elif [[ ${cur} =~ ./.+$ ]]
+    then
+        local current_s3_path=$(echo ${cur} | rev | cut -d'/' -f2- | rev | sed 's|$|/|g')
+    elif [[ ${cur} =~ .+$ ]]
+    then
+        local current_s3_path=''
+        current_bucket_type="top_level"
+    else
+        local current_s3_path=${curr}
+        current_bucket_type="top_level"
+    fi
+    # TODO if current_s3_path is at the top level, append / on completion...
+#    if [[ ${cur} =~ .*/$ ]]
+#    then
+#        local current_s3_path=${cur}
+#    elif [[ ${cur} =~ .*/.*/$ ]]
+#    then
+#        local current_s3_path=$(echo ${cur} | rev | cut -d'/' -f2- | rev)
+#    else
+#        local current_s3_path=${cur}
+#    fi
+#    echo ${current_s3_path}
+    #local current_s3_path=`${COMP_LINE} | cut -d' ' -f2`
+    #echo ${COMP_WORDS[@]} >> /home/tpatch/dev/PRIMARY/aws_completion/log.txt
+    #local current_s3_path=$(echo ${COMP_WORDS[1]} | cut -d'/' -f1)
+    # use compgen to output options
+    if [ ${current_bucket_type} == "top_level" ]
+    then
+        local completion_results=$(aws s3 ls ${current_s3_path} | tr -s ' ' | rev | cut -d' ' -f1 | rev | sed 's|^|${current_s3_path}|g' | sed 's|$|/|g')
+    else
+        local completion_results=$(aws s3 ls ${current_s3_path} | tr -s ' ' | rev | cut -d' ' -f1 | rev | sed 's|^|${current_s3_path}|g')
+    fi
+    COMPREPLY=( $(compgen -W "${completion_results}" -- $cur) )
+}
+complete -F _awsls awsls
+alias awsls="aws s3 ls"
+
+# function to check if ssh agent is running and if not, start it and register the relevant keys
+SSH_ENV="$HOME/.ssh/agent-environment"
+function start_agent {
+    echo "Initialising new SSH agent..."
+    /usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}"
+    echo succeeded
+    chmod 600 "${SSH_ENV}"
+    . "${SSH_ENV}" > /dev/null
+}
+
+# Source SSH settings, if applicable
+
+if [ -f "${SSH_ENV}" ]; then
+    . "${SSH_ENV}" > /dev/null
+    #ps ${SSH_AGENT_PID} doesn't work under cywgin
+    ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
+        start_agent;
+    }
+    /usr/bin/ssh-add /Users/mikezhong/.ssh/tensixteen_git;
+    /usr/bin/ssh-add /Users/mikezhong/.dnanexus_config/ssh_id
+else
+    start_agent;
+fi
+export PATH="${PATH:-}:/Users/mikezhong/.local/flaws/virtualenv/bin"
+source /opt/homebrew/opt/chruby/share/chruby/chruby.sh
+source /opt/homebrew/opt/chruby/share/chruby/auto.sh
+chruby ruby-3.1.3
